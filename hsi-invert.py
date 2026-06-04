@@ -72,11 +72,19 @@ if __name__ == "__main__":
         sys.exit(1)
 
     imagem_path = sys.argv[1]
-    matiz = float(sys.argv[2])
-    largura = float(sys.argv[3])
+    try:
+        matiz = float(sys.argv[2])
+        largura = float(sys.argv[3])
+    except:
+        print('Matiz e Largura devem ser números.')
+        sys.exit(1)
 
     # 1. Carrega a imagem do usuário e gera o círculo de referência
-    img_original = ski.io.imread(imagem_path)
+    try:
+        img_original = ski.io.imread(imagem_path)
+    except:
+        print('Erro ao ler imagem. Verificar caminho.')
+        sys.exit(1)
     circulo_original = gerar_circulo_cromatico()
 
     # 2. Aplica o algoritmo em AMBAS as imagens
