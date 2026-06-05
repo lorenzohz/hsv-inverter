@@ -39,20 +39,20 @@ def gerar_circulo_cromatico(resolucao=400):
     
     return util.img_as_ubyte(rgb_circulo)
 
-def inversao_hsi(imagem, matiz, largura):
+def inversao_hsv(imagem, matiz, largura):
     '''
-    Inverte uma faixa de valores de matiz em uma imagem no espaço de cores HSI.
+    Inverte uma faixa de valores de matiz em uma imagem no espaço de cores HSv.
     Retorna a imagem convertida em formato RGB (uint8).
     '''
     assert 0 <= matiz < 360, "Matiz deve estar entre 0 e 360 graus."
     assert 0 <= largura <= 180, "Largura deve estar entre 0 e 180 graus."
 
-    hsi = ski.color.rgb2hsv(imagem)
+    hsv = ski.color.rgb2hsv(imagem)
 
     limite_inferior = (matiz - largura) / 360.0
     limite_superior = (matiz + largura) / 360.0
 
-    hue = hsi[:, :, 0]
+    hue = hsv[:, :, 0]
 
     if limite_inferior < 0.0:
         mascara = (hue >= (1.0 + limite_inferior)) | (hue <= limite_superior)
@@ -62,14 +62,13 @@ def inversao_hsi(imagem, matiz, largura):
         mascara = (hue >= limite_inferior) & (hue <= limite_superior)
 
     hue[mascara] = (hue[mascara] + 0.5) % 1.0 
-    hsi[:, :, 0] = hue
-
-    rgb_invertida = ski.color.hsv2rgb(hsi)
+    
+    rgb_invertida = ski.color.hsv2rgb(hsv)
     return util.img_as_ubyte(rgb_invertida)
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Forma de uso: python hsi_invert.py <input_image> <matiz> <largura>")
+        print("Forma de uso: python hsv_invert.py <input_image> <matiz> <largura>")
         sys.exit(1)
 
     imagem_path = sys.argv[1]
@@ -89,8 +88,8 @@ if __name__ == "__main__":
     circulo_original = gerar_circulo_cromatico()
 
     # 2. Aplica o algoritmo em AMBAS as imagens
-    img_processada = inversao_hsi(img_original, matiz, largura)
-    circulo_processado = inversao_hsi(circulo_original, matiz, largura)
+    img_processada = inversao_hsv(img_original, matiz, largura)
+    circulo_processado = inversao_hsv(circulo_original, matiz, largura)
 
     # 3. Salva apenas a imagem processada do usuário no disco
     ski.io.imsave("resultado.png", img_processada)
@@ -98,7 +97,7 @@ if __name__ == "__main__":
 
     # 4. Configura a exibição em uma grade 2x2
     fig, axes = plt.subplots(2, 2, figsize=(10, 10))
-    fig.suptitle(f'Filtro HSI: Centro em {matiz}°, Tolerância de ±{largura}°', fontsize=16)
+    fig.suptitle(f'Filtro HSV: Centro em {matiz}°, Tolerância de ±{largura}°', fontsize=16)
 
     # Linha 1: Imagens do Usuário
     axes[0, 0].imshow(img_original)
