@@ -19,7 +19,8 @@ def gerar_circulo_cromatico(resolucao=400):
     angulo = np.arctan2(yy, xx)
 
     # O Ângulo vira o Matiz (Hue) normalizado de 0.0 a 1.0
-    hue = (angulo / (2 * np.pi)) % 1.0
+    # O offset +0.25 rotaciona 90° para que hue=0 (vermelho) fique no topo
+    hue = (angulo / (2 * np.pi) - 0.25) % 1.0
     
     # A Saturação cresce do centro para as bordas
     saturation = np.clip(raio, 0, 1)
